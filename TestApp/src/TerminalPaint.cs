@@ -306,12 +306,24 @@ namespace TestApp
             Graphic.Add(" Save: ENT, Load: SPC ", new Coords(-1, 0));
 
             Graphic.SetOrigin(new Origin(Origin.HorizontalOrigin.Left, Origin.VerticalOrigin.Bottom));
-            Graphic.Add(" Colors:   (1),   (2),   (3),   (4),   (5)   ", new Coords(1, 0));
+            Graphic.Add(" Colors:", new Coords(1, 0));
+            Graphic.Add("    (1),    (2),    (3),    (4),    (5),    (6),    (7),    (8).", new Coords(9, 0), new Colors(Colors.Color.DarkGray, Colors.Color.Default));
             Graphic.Add(" ", new Coords(10, 0), new Colors(Colors.Color.Default, Colors.Color.Red));
-            Graphic.Add(" ", new Coords(17, 0), new Colors(Colors.Color.Default, Colors.Color.Yellow));
-            Graphic.Add(" ", new Coords(24, 0), new Colors(Colors.Color.Default, Colors.Color.Green));
-            Graphic.Add(" ", new Coords(31, 0), new Colors(Colors.Color.Default, Colors.Color.Blue));
-            Graphic.Add(" ", new Coords(38, 0), new Colors(Colors.Color.Default, Colors.Color.Magenta));
+            Graphic.Add(" ", new Coords(11, 0), new Colors(Colors.Color.Default, Colors.Color.DarkRed));
+            Graphic.Add(" ", new Coords(18, 0), new Colors(Colors.Color.Default, Colors.Color.Yellow));
+            Graphic.Add(" ", new Coords(19, 0), new Colors(Colors.Color.Default, Colors.Color.DarkYellow));
+            Graphic.Add(" ", new Coords(26, 0), new Colors(Colors.Color.Default, Colors.Color.Green));
+            Graphic.Add(" ", new Coords(27, 0), new Colors(Colors.Color.Default, Colors.Color.DarkGreen));
+            Graphic.Add(" ", new Coords(34, 0), new Colors(Colors.Color.Default, Colors.Color.Cyan));
+            Graphic.Add(" ", new Coords(35, 0), new Colors(Colors.Color.Default, Colors.Color.DarkCyan));
+            Graphic.Add(" ", new Coords(42, 0), new Colors(Colors.Color.Default, Colors.Color.Blue));
+            Graphic.Add(" ", new Coords(43, 0), new Colors(Colors.Color.Default, Colors.Color.DarkBlue));
+            Graphic.Add(" ", new Coords(50, 0), new Colors(Colors.Color.Default, Colors.Color.Magenta));
+            Graphic.Add(" ", new Coords(51, 0), new Colors(Colors.Color.Default, Colors.Color.DarkMagenta));
+            Graphic.Add(" ", new Coords(58, 0), new Colors(Colors.Color.Default, Colors.Color.Gray));
+            Graphic.Add(" ", new Coords(59, 0), new Colors(Colors.Color.Default, Colors.Color.DarkGray));
+            Graphic.Add(" ", new Coords(66, 0), new Colors(Colors.Color.Default, Colors.Color.White));
+            Graphic.Add(" ", new Coords(67, 0), new Colors(Colors.Color.Default, Colors.Color.Black));
 
             Graphic.SetOrigin(new Origin(Origin.HorizontalOrigin.Right, Origin.VerticalOrigin.Bottom));
             Graphic.Add(" Draw: LMB, Erase: RMB, Clear: MMB ", new Coords(-1, 0));
