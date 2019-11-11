@@ -270,11 +270,6 @@ namespace TestApp
                     justLoaded = false;
                 }
             }
-            else
-            {
-                Graphic.ResetDefaultColors();
-            }
-
 
             drawInterface();
             drawDebug();
