@@ -242,6 +242,20 @@ namespace TestApp
             Graphic.Clear();
             Graphic.FitSizesToWindow();
 
+            var pixelCount = paintPixels.Count;
+            for (int i = 0; i < pixelCount; i++)
+            {
+                if (i < paintPixels.Count)
+                    Graphic.Add(paintPixels[i].Char.ToString(), paintPixels[i].Position, paintPixels[i].Color);
+            }
+
+            pixelCount = tempPixels.Count;
+            for (int i = 0; i < pixelCount; i++)
+            {
+                if (i < tempPixels.Count)
+                    Graphic.Add(tempPixels[i].Char.ToString(), tempPixels[i].Position, tempPixels[i].Color);
+            }
+
             if (justSaved || justLoaded)
             {
                 if (justSaved)
@@ -261,19 +275,6 @@ namespace TestApp
                 Graphic.ResetDefaultColors();
             }
 
-            var pixelCount = paintPixels.Count;
-            for (int i = 0; i < pixelCount; i++)
-            {
-                if (i < paintPixels.Count)
-                    Graphic.Add(paintPixels[i].Char.ToString(), paintPixels[i].Position, paintPixels[i].Color);
-            }
-
-            pixelCount = tempPixels.Count;
-            for (int i = 0; i < pixelCount; i++)
-            {
-                if (i < tempPixels.Count)
-                    Graphic.Add(tempPixels[i].Char.ToString(), tempPixels[i].Position, tempPixels[i].Color);
-            }
 
             drawInterface();
             drawDebug();
