@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using Newtonsoft.Json;
 using Striped.Drawing;
 using Striped.Engine;
@@ -17,17 +18,10 @@ namespace TestApp
 
     internal class TerminalPaint : GameCore
     {
-        public delegate void OnDrawHandler();
-        public event OnDrawHandler DrawEvent;
+        Colors cursorColor = new Colors(Colors.Color.Default, Colors.Color.Gray);
+        Colors brushColor = new Colors(Colors.Color.Default, Colors.Color.White);
 
-        int mouseCount, keyCount;
-        MouseEventInfo mouseEvent = new MouseEventInfo();
-        KeyEventInfo keyEvent = new KeyEventInfo();
-
-        Colors cursorColor = new Colors(Colors.Color.Default, Colors.Color.DarkGreen);
-        Colors brushColor = new Colors(Colors.Color.Default, Colors.Color.Green);
-
-        Colors oldCurorColors = new Colors(Colors.Color.Default, Colors.Color.DarkGreen);
+        Colors oldCurorColors = new Colors(Colors.Color.Default, Colors.Color.Gray);
 
         List<PaintPixel> paintPixels = new List<PaintPixel>();
         List<PaintPixel> tempPixels = new List<PaintPixel>();
@@ -55,9 +49,6 @@ namespace TestApp
 
         public override void OnMouseEvent(MouseEventInfo e)
         {
-            mouseCount++;
-            mouseEvent = e;
-
             switch (e.ButtonPressed)
             {
                 case MouseButtons.None:
@@ -159,9 +150,6 @@ namespace TestApp
 
         public override void OnKeyPress(KeyEventInfo e)
         {
-            keyCount++;
-            keyEvent = e;
-
             if (e.Pressed)
             {
                 switch (e.Key)
@@ -173,43 +161,39 @@ namespace TestApp
                         break;
                     case ConsoleKey.D1:
                         {
-                            brushColor.BackColor = ConsoleColor.Red;
-                            cursorColor.BackColor = ConsoleColor.DarkRed;
-                            oldCurorColors.BackColor = ConsoleColor.DarkRed;
+                            ChangePaintColors(new Colors(Colors.Color.Default, Colors.Color.Red), new Colors(Colors.Color.Default, Colors.Color.DarkRed));
                         }
                         break;
                     case ConsoleKey.D2:
                         {
-                            brushColor.BackColor = ConsoleColor.Yellow;
-                            cursorColor.BackColor = ConsoleColor.DarkYellow;
-                            oldCurorColors.BackColor = ConsoleColor.DarkYellow;
+                            ChangePaintColors(new Colors(Colors.Color.Default, Colors.Color.Yellow), new Colors(Colors.Color.Default, Colors.Color.DarkYellow));
                         }
                         break;
                     case ConsoleKey.D3:
                         {
-                            brushColor.BackColor = ConsoleColor.Green;
-                            cursorColor.BackColor = ConsoleColor.DarkGreen;
-                            oldCurorColors.BackColor = ConsoleColor.DarkGreen;
+                            ChangePaintColors(new Colors(Colors.Color.Default, Colors.Color.Green), new Colors(Colors.Color.Default, Colors.Color.DarkGreen));
                         }
                         break;
                     case ConsoleKey.D4:
                         {
-                            brushColor.BackColor = ConsoleColor.Blue;
-                            cursorColor.BackColor = ConsoleColor.DarkBlue;
-                            oldCurorColors.BackColor = ConsoleColor.DarkBlue;
+                            ChangePaintColors(new Colors(Colors.Color.Default, Colors.Color.Blue), new Colors(Colors.Color.Default, Colors.Color.DarkBlue));
                         }
                         break;
                     case ConsoleKey.D5:
                         {
-                            brushColor.BackColor = ConsoleColor.Magenta;
-                            cursorColor.BackColor = ConsoleColor.DarkMagenta;
-                            oldCurorColors.BackColor = ConsoleColor.DarkMagenta;
+                            ChangePaintColors(new Colors(Colors.Color.Default, Colors.Color.Magenta), new Colors(Colors.Color.Default, Colors.Color.DarkMagenta));
                         }
                         break;
                     case ConsoleKey.Enter:
                         {
-                            string output = JsonConvert.SerializeObject(paintPixels, Formatting.Indented);
-                            FileInfo fi = new FileInfo(Environment.CurrentDirectory + "/drawing.json");
+                            string output = JsonConvert.SerializeObject(paintPixels/*, Formatting.Indented*/);
+
+                            if (!Directory.Exists("./temp"))
+                            {
+                                Directory.CreateDirectory("./temp");
+                            }
+
+                            FileInfo fi = new FileInfo(Environment.CurrentDirectory + "/temp/draving.json");
 
                             if (fi.Exists) fi.Delete();
 
@@ -218,13 +202,35 @@ namespace TestApp
                                 sw.Write(output);
                             }
 
+                            if (File.Exists("./save.tp"))
+                            {
+                                File.Delete("./save.tp");
+                            }
+
+                            ZipFile.CreateFromDirectory("./temp", "./save.tp", CompressionLevel.Fastest, false);
+
+                            if (Directory.Exists("./temp"))
+                            {
+                                Directory.Delete("./temp", true);
+                            }
+
                             justSaved = true;
                         }
                         break;
                     case ConsoleKey.Spacebar:
                         {
                             string input = "";
-                            FileInfo fi = new FileInfo(Environment.CurrentDirectory + "/drawing.json");
+
+                            if (!File.Exists("./save.tp")) return;
+
+                            if (Directory.Exists("./temp"))
+                            {
+                                Directory.Delete("./temp", true);
+                            }
+
+                            ZipFile.ExtractToDirectory("./save.tp", "./temp");
+
+                            var fi = new FileInfo("./temp/draving.json");
 
                             if (!fi.Exists) return;
 
@@ -232,6 +238,11 @@ namespace TestApp
                             {
                                 input = sw.ReadToEnd();
                                 
+                            }
+
+                            if (Directory.Exists("./temp"))
+                            {
+                                Directory.Delete("./temp", true);
                             }
 
                             paintPixels = JsonConvert.DeserializeObject<List<PaintPixel>>(input);
@@ -248,6 +259,13 @@ namespace TestApp
             }
         }
 
+        private void ChangePaintColors(Colors brush, Colors cursor)
+        {
+            brushColor = brush;
+            cursorColor = cursor;
+            oldCurorColors = cursor;
+        }
+
         public override void OnUpdate()
         {
 
@@ -257,6 +275,20 @@ namespace TestApp
         {
             Graphic.Clear();
             Graphic.FitSizesToWindow();
+
+            var pixelCount = paintPixels.Count;
+            for (int i = 0; i < pixelCount; i++)
+            {
+                if (i < paintPixels.Count)
+                    Graphic.Add(paintPixels[i].Char.ToString(), paintPixels[i].Position, paintPixels[i].Color);
+            }
+
+            pixelCount = tempPixels.Count;
+            for (int i = 0; i < pixelCount; i++)
+            {
+                if (i < tempPixels.Count)
+                    Graphic.Add(tempPixels[i].Char.ToString(), tempPixels[i].Position, tempPixels[i].Color);
+            }
 
             if (justSaved || justLoaded)
             {
@@ -271,24 +303,6 @@ namespace TestApp
                     Graphic.AddRectangle(" ", new Colors(Colors.Color.Default, Colors.Color.Gray), new Coords(3, 2), new Coords(Graphic.Width - 4, Graphic.Height - 3));
                     justLoaded = false;
                 }
-            }
-            else
-            {
-                Graphic.ResetDefaultColors();
-            }
-
-            var pixelCount = paintPixels.Count;
-            for (int i = 0; i < pixelCount; i++)
-            {
-                if (i < paintPixels.Count)
-                    Graphic.Add(paintPixels[i].Char.ToString(), paintPixels[i].Position, paintPixels[i].Color);
-            }
-
-            pixelCount = tempPixels.Count;
-            for (int i = 0; i < pixelCount; i++)
-            {
-                if (i < tempPixels.Count)
-                    Graphic.Add(tempPixels[i].Char.ToString(), tempPixels[i].Position, tempPixels[i].Color);
             }
 
             drawInterface();
@@ -322,12 +336,24 @@ namespace TestApp
             Graphic.Add(" Save: ENT, Load: SPC ", new Coords(-1, 0));
 
             Graphic.SetOrigin(new Origin(Origin.HorizontalOrigin.Left, Origin.VerticalOrigin.Bottom));
-            Graphic.Add(" Colors:   (1),   (2),   (3),   (4),   (5)   ", new Coords(1, 0));
+            Graphic.Add(" Colors:", new Coords(1, 0));
+            Graphic.Add("    (1),    (2),    (3),    (4),    (5),    (6),    (7),    (8).", new Coords(9, 0), new Colors(Colors.Color.DarkGray, Colors.Color.Default));
             Graphic.Add(" ", new Coords(10, 0), new Colors(Colors.Color.Default, Colors.Color.Red));
-            Graphic.Add(" ", new Coords(17, 0), new Colors(Colors.Color.Default, Colors.Color.Yellow));
-            Graphic.Add(" ", new Coords(24, 0), new Colors(Colors.Color.Default, Colors.Color.Green));
-            Graphic.Add(" ", new Coords(31, 0), new Colors(Colors.Color.Default, Colors.Color.Blue));
-            Graphic.Add(" ", new Coords(38, 0), new Colors(Colors.Color.Default, Colors.Color.Magenta));
+            Graphic.Add(" ", new Coords(11, 0), new Colors(Colors.Color.Default, Colors.Color.DarkRed));
+            Graphic.Add(" ", new Coords(18, 0), new Colors(Colors.Color.Default, Colors.Color.Yellow));
+            Graphic.Add(" ", new Coords(19, 0), new Colors(Colors.Color.Default, Colors.Color.DarkYellow));
+            Graphic.Add(" ", new Coords(26, 0), new Colors(Colors.Color.Default, Colors.Color.Green));
+            Graphic.Add(" ", new Coords(27, 0), new Colors(Colors.Color.Default, Colors.Color.DarkGreen));
+            Graphic.Add(" ", new Coords(34, 0), new Colors(Colors.Color.Default, Colors.Color.Cyan));
+            Graphic.Add(" ", new Coords(35, 0), new Colors(Colors.Color.Default, Colors.Color.DarkCyan));
+            Graphic.Add(" ", new Coords(42, 0), new Colors(Colors.Color.Default, Colors.Color.Blue));
+            Graphic.Add(" ", new Coords(43, 0), new Colors(Colors.Color.Default, Colors.Color.DarkBlue));
+            Graphic.Add(" ", new Coords(50, 0), new Colors(Colors.Color.Default, Colors.Color.Magenta));
+            Graphic.Add(" ", new Coords(51, 0), new Colors(Colors.Color.Default, Colors.Color.DarkMagenta));
+            Graphic.Add(" ", new Coords(58, 0), new Colors(Colors.Color.Default, Colors.Color.Gray));
+            Graphic.Add(" ", new Coords(59, 0), new Colors(Colors.Color.Default, Colors.Color.DarkGray));
+            Graphic.Add(" ", new Coords(66, 0), new Colors(Colors.Color.Default, Colors.Color.White));
+            Graphic.Add(" ", new Coords(67, 0), new Colors(Colors.Color.Default, Colors.Color.Black));
 
             Graphic.SetOrigin(new Origin(Origin.HorizontalOrigin.Right, Origin.VerticalOrigin.Bottom));
             Graphic.Add(" Draw: LMB, Erase: RMB, Clear: MMB ", new Coords(-1, 0));
@@ -347,19 +373,6 @@ namespace TestApp
             Graphic.Add($"Draw calls: ....: {Graphic.LastDrawCallsCount}", new Coords(3, 4));
             Graphic.Add($"Pixels painted .: {paintPixels.Count}", new Coords(3, 5));
             Graphic.Add($"Pixels in temp .: {tempPixels.Count}", new Coords(3, 6));
-
-            //Graphic.Add($"- Mouse Events -", new Coords(0, 5));
-            //Graphic.Add($"Events count ...: {mouseCount}", new Coords(0, 6));
-            //Graphic.Add($"Button pressed .: {mouseEvent.ButtonPressed}", new Coords(0, 7));
-            //Graphic.Add($"Click flags ....: {mouseEvent.EventFlag}", new Coords(0, 8));
-            //Graphic.Add($"Position .......: {mouseEvent.Position.X} {mouseEvent.Position.Y}", new Coords(0, 9));
-
-            //Graphic.Add($"- Key Events -", new Coords(0, 11));
-            //Graphic.Add($"Events count ..: {keyCount}", new Coords(0, 12));
-            //Graphic.Add($"Key name ......: {keyEvent.Key}", new Coords(0, 13));
-            //Graphic.Add($"Key modifiers .: {keyEvent.Modifiers}", new Coords(0, 14));
-            //Graphic.Add($"Key pressed ...: {keyEvent.Pressed}", new Coords(0, 15));
-            //Graphic.Add($"Key char ......: {keyEvent.KeyChar}", new Coords(0, 16));
         }
     }
 }
