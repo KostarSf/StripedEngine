@@ -7,7 +7,7 @@ namespace TestApp
     {
         static void Main()
         {
-            var game = new MyGameCore();
+            var game = new TerminalPaint();
         }
     }
 }

@@ -291,20 +291,6 @@ namespace Striped.Drawing
             }
         }
 
-        public static void AddRectangleBorder(WindowBorder border, Colors colors, Coords pos1, Coords pos2)
-        {
-            AddRectangleBorder(
-                border.LineTop,
-                border.LineRight,
-                border.LineBottom,
-                border.LineLeft,
-                border.CornerTopLeft,
-                border.CornerTopRight,
-                border.CornerBottomRight,
-                border.CornerBottomLeft,
-                colors, pos1, pos2);
-        }
-
         public static void AddRectangleBorder(string t, string r, string b, string l, string lt, string rt, string rb, string lb, Colors colors, Coords pos1, Coords pos2)
         {
             void swap<T>(ref T a, ref T b)

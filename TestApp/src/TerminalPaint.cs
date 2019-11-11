@@ -15,7 +15,7 @@ namespace TestApp
         public char Char { get; set; }
     }
 
-    internal class MyGameCore : GameCore
+    internal class TerminalPaint : GameCore
     {
         public delegate void OnDrawHandler();
         public event OnDrawHandler DrawEvent;
@@ -29,29 +29,16 @@ namespace TestApp
 
         Colors oldCurorColors = new Colors(Colors.Color.Default, Colors.Color.DarkGreen);
 
-        Window paintWindow = new Window 
-        { 
-            Position = new Coords(15, 5), 
-            Width = 20, 
-            Height = 10,
-            BorderColor = Colors.Default,
-            Border = WindowBorder.Default,
-            Control = WindowControl.None,
-            CanResize = true,
-        };
-
         List<PaintPixel> paintPixels = new List<PaintPixel>();
         List<PaintPixel> tempPixels = new List<PaintPixel>();
 
-        bool showDebug = true;
+        bool showDebug;
 
         bool justSaved;
         bool justLoaded;
         bool clearTempPaint;
 
-        bool mousePressed;
-
-        public MyGameCore()
+        public TerminalPaint()
         {
             Title = "KostarSf's Terminal Paint";
 
@@ -61,9 +48,7 @@ namespace TestApp
             EnableNativeInput = true;
 
             Graphic.EnableFastDraw = true;
-            Graphic.ShowLineUpdates = true;
-
-            AddObject(paintWindow);
+            Graphic.ShowLineUpdates = false;
 
             this.Start();
         }
@@ -73,25 +58,10 @@ namespace TestApp
             mouseCount++;
             mouseEvent = e;
 
-            switch(e.EventFlag)
-            {
-                case Striped.Engine.MouseEvent.Pressed:
-                    {
-                        mousePressed = true;
-                    }
-                    break;
-                case Striped.Engine.MouseEvent.None:
-                    {
-                        mousePressed = false;
-                    }
-                    break;
-            }
-
             switch (e.ButtonPressed)
             {
                 case MouseButtons.None:
                     {
-
                         cursorColor = new Colors(oldCurorColors);
                         if (tempPixels.Count > 0)
                         {
@@ -116,8 +86,6 @@ namespace TestApp
                                 clearTempPaint = false;
                             }
                             tempPixels.Clear();
-
-                            
                         }
                     }
                     break;
@@ -137,14 +105,6 @@ namespace TestApp
                     {
                         cursorColor.BackColor = ConsoleColor.Cyan;
 
-                        //for (int i = paintPixels.Count - 1; i >= 0; i--)
-                        //{
-                        //    if (paintPixels[i].Position.SameAs(e.Position))
-                        //    {
-                        //        paintPixels.RemoveAt(i);
-                        //    }
-                        //}
-
                         for (int i = tempPixels.Count - 1; i >= 0; i--)
                         {
                             if (tempPixels[i].Position.SameAs(e.Position))
@@ -153,30 +113,31 @@ namespace TestApp
                             }
                         }
 
-
-                        if (tempPixels.Count == 0)
+                        if (e.Position.IsInRectangle(new Coords(3, 2), new Coords(Graphic.Width - 4, Graphic.Height - 3)))
                         {
-                            //paintPixels.Add(new PaintPixel { Char = ' ', Color = new Colors(brushColor), Position = e.Position });
-                            tempPixels.Add(new PaintPixel { Char = ' ', Color = new Colors(brushColor), Position = e.Position });
-                        }
-                        else
-                        {
-                            var horDistance = Coords.HorisontalDistance(tempPixels[tempPixels.Count - 1].Position, e.Position);
-                            var verDistance = Coords.VerticalDistance(tempPixels[tempPixels.Count - 1].Position, e.Position);
-
-                            if (horDistance > 1 || verDistance > 1)
+                            if (tempPixels.Count == 0)
                             {
-                                var interpolatePath = Coords.GetPath(tempPixels[tempPixels.Count - 1].Position, e.Position);
-                                interpolatePath.RemoveAt(0);
-
-                                foreach(var coords in interpolatePath)
-                                {
-                                    tempPixels.Add(new PaintPixel { Char = ' ', Color = new Colors(brushColor), Position = coords });
-                                }
+                                tempPixels.Add(new PaintPixel { Char = ' ', Color = new Colors(brushColor), Position = e.Position });
                             }
                             else
                             {
-                                tempPixels.Add(new PaintPixel { Char = ' ', Color = new Colors(brushColor), Position = e.Position });
+                                var horDistance = Coords.HorisontalDistance(tempPixels[tempPixels.Count - 1].Position, e.Position);
+                                var verDistance = Coords.VerticalDistance(tempPixels[tempPixels.Count - 1].Position, e.Position);
+
+                                if (horDistance > 1 || verDistance > 1)
+                                {
+                                    var interpolatePath = Coords.GetPath(tempPixels[tempPixels.Count - 1].Position, e.Position);
+                                    interpolatePath.RemoveAt(0);
+
+                                    foreach (var coords in interpolatePath)
+                                    {
+                                        tempPixels.Add(new PaintPixel { Char = ' ', Color = new Colors(brushColor), Position = coords });
+                                    }
+                                }
+                                else
+                                {
+                                    tempPixels.Add(new PaintPixel { Char = ' ', Color = new Colors(brushColor), Position = e.Position });
+                                }
                             }
                         }
                     }
@@ -316,115 +277,76 @@ namespace TestApp
                 Graphic.ResetDefaultColors();
             }
 
-            /*!! Раскомментить если не выйдет */
+            var pixelCount = paintPixels.Count;
+            for (int i = 0; i < pixelCount; i++)
+            {
+                if (i < paintPixels.Count)
+                    Graphic.Add(paintPixels[i].Char.ToString(), paintPixels[i].Position, paintPixels[i].Color);
+            }
 
-            //var pixelCount = paintPixels.Count;
-            //for (int i = 0; i < pixelCount; i++)
-            //{
-            //    if (i < paintPixels.Count)
-            //        Graphic.Add(paintPixels[i].Char.ToString(), paintPixels[i].Position, paintPixels[i].Color);
-            //}
+            pixelCount = tempPixels.Count;
+            for (int i = 0; i < pixelCount; i++)
+            {
+                if (i < tempPixels.Count)
+                    Graphic.Add(tempPixels[i].Char.ToString(), tempPixels[i].Position, tempPixels[i].Color);
+            }
 
-            //pixelCount = tempPixels.Count;
-            //for (int i = 0; i < pixelCount; i++)
-            //{
-            //    if (i < tempPixels.Count)
-            //        Graphic.Add(tempPixels[i].Char.ToString(), tempPixels[i].Position, tempPixels[i].Color);
-            //}
+            drawInterface();
+            drawDebug();
 
-            showInterface();
-            //showHelp();
-            //showInputDebug();
-
-            //Graphic.Add(" ", MousePosition, cursorColor);
+            if (MousePosition.IsInRectangle(new Coords(3, 2), new Coords(Graphic.Width - 4, Graphic.Height - 3)))
+            {
+                Graphic.Add(" ", MousePosition, cursorColor);
+            }
 
             Graphic.Draw();
         }
 
-        private void showInterface()
+        void drawInterface()
         {
-            Graphic.AddRectangle(" ", new Colors(Colors.Color.Default, Colors.Color.Gray), Coords.Zero, new Coords(Graphic.Width - 1, 0));
-            Graphic.Add(" Файл ", new Coords(1, 0), new Colors(Colors.Color.Black, Colors.Color.Gray));
-            Graphic.Add(" Правка ", new Coords(8, 0), new Colors(Colors.Color.Black, Colors.Color.Gray));
-            Graphic.Add(" Помощь ", new Coords(17, 0), new Colors(Colors.Color.Black, Colors.Color.Gray));
+            Graphic.AddRectangleBorder(" ", " ", " ", " ", " ", " ", " ", " ", Colors.Default, Coords.Zero, new Coords(Graphic.Width - 1, Graphic.Height - 1));
+            Graphic.AddRectangleBorder(" ", " ", " ", " ", " ", " ", " ", " ", Colors.Default, new Coords(1, 0), new Coords(Graphic.Width - 2, Graphic.Height - 1));
 
-            if (MousePosition.IsInRectangle(new Coords(1, 0), new Coords(6, 0)))
-            {
-                if (mousePressed)
-                {
-                    Graphic.Add(" Файл ", new Coords(1, 0), new Colors(Colors.Color.Black, Colors.Color.DarkGray));
-                }
-                else
-                {
-                    Graphic.Add(" Файл ", new Coords(1, 0), new Colors(Colors.Color.White, Colors.Color.DarkGray));
-                }
-            }
+            Graphic.AddRectangleBorder("═", "║", "═", "║", "╔", "╗", "╝", "╚", Colors.Default, new Coords(2, 1), new Coords(Graphic.Width - 3, Graphic.Height - 2));
 
-            if (MousePosition.IsInRectangle(new Coords(8, 0), new Coords(15, 0)))
-            {
-                if (mousePressed)
-                {
-                    Graphic.Add(" Правка ", new Coords(8, 0), new Colors(Colors.Color.Black, Colors.Color.DarkGray));
-                }
-                else
-                {
-                    Graphic.Add(" Правка ", new Coords(8, 0), new Colors(Colors.Color.White, Colors.Color.DarkGray));
-                }
-            }
+            Graphic.Add(" Debug: Q ", new Coords(1, 0), new Colors(Colors.Color.DarkGray, Colors.Color.Default));
 
-            if (MousePosition.IsInRectangle(new Coords(17, 0), new Coords(24, 0)))
+            if (MousePosition.IsInRectangle(new Coords(3, 2), new Coords(Graphic.Width - 4, Graphic.Height - 3)))
             {
-                if (mousePressed)
-                {
-                    Graphic.Add(" Помощь ", new Coords(17, 0), new Colors(Colors.Color.Black, Colors.Color.DarkGray));
-                }
-                else
-                {
-                    Graphic.Add(" Помощь ", new Coords(17, 0), new Colors(Colors.Color.White, Colors.Color.DarkGray));
-                }
+                Graphic.SetOrigin(new Origin(Origin.HorizontalOrigin.Center, Origin.VerticalOrigin.Top));
+                Graphic.Add($"{MousePosition.X - 2}", new Coords(-2, 0));
+                Graphic.Add($"{MousePosition.Y - 1}", new Coords(2, 0));
             }
 
             Graphic.SetOrigin(new Origin(Origin.HorizontalOrigin.Right, Origin.VerticalOrigin.Top));
-            Graphic.Add($" {this.MousePosition.X} {this.MousePosition.Y} ", Coords.Zero, new Colors(Colors.Color.Black, Colors.Color.Gray));
+            Graphic.Add(" Save: ENT, Load: SPC ", new Coords(-1, 0));
 
-            Graphic.SetOrigin(Origin.Default);
-
-            DrawEvent();
-            //Graphic.AddRectangleBorder("═", "│", "─", "│", "╒", "╕", "┘", "└", new Colors(Colors.Color.Default, Colors.Color.Default), new Coords(15, 5), new Coords(70, 15));
-        }
-
-        void showHelp()
-        {
-            Graphic.Add(" Дебаг: Q ", Coords.Zero, new Colors(Colors.Color.DarkGray, Colors.Color.Default));
-
-            //var verPos = Graphic.Height - 1;
             Graphic.SetOrigin(new Origin(Origin.HorizontalOrigin.Left, Origin.VerticalOrigin.Bottom));
-            Graphic.Add(" Цвета:   (1),   (2),   (3),   (4),   (5)   ", new Coords(0, -1));
-            Graphic.Add(" ", new Coords(8, -1), new Colors(Colors.Color.Default, Colors.Color.Red));
-            Graphic.Add(" ", new Coords(15, -1), new Colors(Colors.Color.Default, Colors.Color.Yellow));
-            Graphic.Add(" ", new Coords(22, -1), new Colors(Colors.Color.Default, Colors.Color.Green));
-            Graphic.Add(" ", new Coords(29, -1), new Colors(Colors.Color.Default, Colors.Color.Blue));
-            Graphic.Add(" ", new Coords(36, -1), new Colors(Colors.Color.Default, Colors.Color.Magenta));
-            Graphic.Add(" Рисовать: ЛКМ, Стереть: ПКМ, Очистить: СКМ ", new Coords(0, 0));
+            Graphic.Add(" Colors:   (1),   (2),   (3),   (4),   (5)   ", new Coords(1, 0));
+            Graphic.Add(" ", new Coords(10, 0), new Colors(Colors.Color.Default, Colors.Color.Red));
+            Graphic.Add(" ", new Coords(17, 0), new Colors(Colors.Color.Default, Colors.Color.Yellow));
+            Graphic.Add(" ", new Coords(24, 0), new Colors(Colors.Color.Default, Colors.Color.Green));
+            Graphic.Add(" ", new Coords(31, 0), new Colors(Colors.Color.Default, Colors.Color.Blue));
+            Graphic.Add(" ", new Coords(38, 0), new Colors(Colors.Color.Default, Colors.Color.Magenta));
 
             Graphic.SetOrigin(new Origin(Origin.HorizontalOrigin.Right, Origin.VerticalOrigin.Bottom));
-            Graphic.Add(" Сохранить: ENT, Загрузить: SPC ", new Coords(0, 0));
-
-            Graphic.SetOrigin(new Origin(Origin.HorizontalOrigin.Right, Origin.VerticalOrigin.Top));
-            Graphic.Add($"{this.MousePosition.X} {this.MousePosition.Y}", Coords.Zero);
+            Graphic.Add(" Draw: LMB, Erase: RMB, Clear: MMB ", new Coords(-1, 0));
 
             Graphic.SetOrigin(Origin.Default);
         }
 
-        void showInputDebug()
+        void drawDebug()
         {
             if (!showDebug) return;
 
-            Graphic.Add($"Tick rate: .....: {CurrentTickRate}/{TickRate}", new Coords(0, 0));
-            Graphic.Add($"Frame rate: ....: {CurrentFrameRate}/{FrameRate}", new Coords(0, 1));
-            Graphic.Add($"Draw calls: ....: {Graphic.LastDrawCallsCount}", new Coords(0, 2));
-            Graphic.Add($"Pixels painted .: {paintPixels.Count}", new Coords(0, 3));
-            Graphic.Add($"Pixels in temp .: {tempPixels.Count}", new Coords(0, 4));
+            Graphic.AddRectangle(" ", Colors.Default, new Coords(2, 1), new Coords(27, 7));
+            Graphic.AddRectangleBorder("═", "│", "─", "║", "╔", "╤", "┘", "╟", Colors.Default, new Coords(2, 1), new Coords(27, 7));
+
+            Graphic.Add($"Tick rate: .....: {CurrentTickRate}/{TickRate}", new Coords(3, 2));
+            Graphic.Add($"Frame rate: ....: {CurrentFrameRate}/{FrameRate}", new Coords(3, 3));
+            Graphic.Add($"Draw calls: ....: {Graphic.LastDrawCallsCount}", new Coords(3, 4));
+            Graphic.Add($"Pixels painted .: {paintPixels.Count}", new Coords(3, 5));
+            Graphic.Add($"Pixels in temp .: {tempPixels.Count}", new Coords(3, 6));
 
             //Graphic.Add($"- Mouse Events -", new Coords(0, 5));
             //Graphic.Add($"Events count ...: {mouseCount}", new Coords(0, 6));
