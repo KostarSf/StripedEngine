@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <AssemblyName>Striped.Drawing</AssemblyName>
+    <RootNamespace>Striped.Drawing</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Striped.Utils\Striped.Utils.csproj" />
+  </ItemGroup>
+
+</Project>
