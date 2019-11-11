@@ -17,12 +17,6 @@ namespace TestApp
 
     internal class TerminalPaint : GameCore
     {
-        public delegate void OnDrawHandler();
-        public event OnDrawHandler DrawEvent;
-
-        int mouseCount, keyCount;
-        MouseEventInfo mouseEvent = new MouseEventInfo();
-        KeyEventInfo keyEvent = new KeyEventInfo();
 
         Colors cursorColor = new Colors(Colors.Color.Default, Colors.Color.DarkGreen);
         Colors brushColor = new Colors(Colors.Color.Default, Colors.Color.Green);
@@ -55,9 +49,6 @@ namespace TestApp
 
         public override void OnMouseEvent(MouseEventInfo e)
         {
-            mouseCount++;
-            mouseEvent = e;
-
             switch (e.ButtonPressed)
             {
                 case MouseButtons.None:
@@ -159,9 +150,6 @@ namespace TestApp
 
         public override void OnKeyPress(KeyEventInfo e)
         {
-            keyCount++;
-            keyEvent = e;
-
             if (e.Pressed)
             {
                 switch (e.Key)
@@ -347,19 +335,6 @@ namespace TestApp
             Graphic.Add($"Draw calls: ....: {Graphic.LastDrawCallsCount}", new Coords(3, 4));
             Graphic.Add($"Pixels painted .: {paintPixels.Count}", new Coords(3, 5));
             Graphic.Add($"Pixels in temp .: {tempPixels.Count}", new Coords(3, 6));
-
-            //Graphic.Add($"- Mouse Events -", new Coords(0, 5));
-            //Graphic.Add($"Events count ...: {mouseCount}", new Coords(0, 6));
-            //Graphic.Add($"Button pressed .: {mouseEvent.ButtonPressed}", new Coords(0, 7));
-            //Graphic.Add($"Click flags ....: {mouseEvent.EventFlag}", new Coords(0, 8));
-            //Graphic.Add($"Position .......: {mouseEvent.Position.X} {mouseEvent.Position.Y}", new Coords(0, 9));
-
-            //Graphic.Add($"- Key Events -", new Coords(0, 11));
-            //Graphic.Add($"Events count ..: {keyCount}", new Coords(0, 12));
-            //Graphic.Add($"Key name ......: {keyEvent.Key}", new Coords(0, 13));
-            //Graphic.Add($"Key modifiers .: {keyEvent.Modifiers}", new Coords(0, 14));
-            //Graphic.Add($"Key pressed ...: {keyEvent.Pressed}", new Coords(0, 15));
-            //Graphic.Add($"Key char ......: {keyEvent.KeyChar}", new Coords(0, 16));
         }
     }
 }
