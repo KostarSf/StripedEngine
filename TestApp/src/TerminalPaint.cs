@@ -17,11 +17,10 @@ namespace TestApp
 
     internal class TerminalPaint : GameCore
     {
+        Colors cursorColor = new Colors(Colors.Color.Default, Colors.Color.Gray);
+        Colors brushColor = new Colors(Colors.Color.Default, Colors.Color.White);
 
-        Colors cursorColor = new Colors(Colors.Color.Default, Colors.Color.DarkGreen);
-        Colors brushColor = new Colors(Colors.Color.Default, Colors.Color.Green);
-
-        Colors oldCurorColors = new Colors(Colors.Color.Default, Colors.Color.DarkGreen);
+        Colors oldCurorColors = new Colors(Colors.Color.Default, Colors.Color.Gray);
 
         List<PaintPixel> paintPixels = new List<PaintPixel>();
         List<PaintPixel> tempPixels = new List<PaintPixel>();
@@ -161,37 +160,27 @@ namespace TestApp
                         break;
                     case ConsoleKey.D1:
                         {
-                            brushColor.BackColor = ConsoleColor.Red;
-                            cursorColor.BackColor = ConsoleColor.DarkRed;
-                            oldCurorColors.BackColor = ConsoleColor.DarkRed;
+                            ChangePaintColors(new Colors(Colors.Color.Default, Colors.Color.Red), new Colors(Colors.Color.Default, Colors.Color.DarkRed));
                         }
                         break;
                     case ConsoleKey.D2:
                         {
-                            brushColor.BackColor = ConsoleColor.Yellow;
-                            cursorColor.BackColor = ConsoleColor.DarkYellow;
-                            oldCurorColors.BackColor = ConsoleColor.DarkYellow;
+                            ChangePaintColors(new Colors(Colors.Color.Default, Colors.Color.Yellow), new Colors(Colors.Color.Default, Colors.Color.DarkYellow));
                         }
                         break;
                     case ConsoleKey.D3:
                         {
-                            brushColor.BackColor = ConsoleColor.Green;
-                            cursorColor.BackColor = ConsoleColor.DarkGreen;
-                            oldCurorColors.BackColor = ConsoleColor.DarkGreen;
+                            ChangePaintColors(new Colors(Colors.Color.Default, Colors.Color.Green), new Colors(Colors.Color.Default, Colors.Color.DarkGreen));
                         }
                         break;
                     case ConsoleKey.D4:
                         {
-                            brushColor.BackColor = ConsoleColor.Blue;
-                            cursorColor.BackColor = ConsoleColor.DarkBlue;
-                            oldCurorColors.BackColor = ConsoleColor.DarkBlue;
+                            ChangePaintColors(new Colors(Colors.Color.Default, Colors.Color.Blue), new Colors(Colors.Color.Default, Colors.Color.DarkBlue));
                         }
                         break;
                     case ConsoleKey.D5:
                         {
-                            brushColor.BackColor = ConsoleColor.Magenta;
-                            cursorColor.BackColor = ConsoleColor.DarkMagenta;
-                            oldCurorColors.BackColor = ConsoleColor.DarkMagenta;
+                            ChangePaintColors(new Colors(Colors.Color.Default, Colors.Color.Magenta), new Colors(Colors.Color.Default, Colors.Color.DarkMagenta));
                         }
                         break;
                     case ConsoleKey.Enter:
@@ -234,6 +223,13 @@ namespace TestApp
                         break;
                 }
             }
+        }
+
+        private void ChangePaintColors(Colors brush, Colors cursor)
+        {
+            brushColor = brush;
+            cursorColor = cursor;
+            oldCurorColors = cursor;
         }
 
         public override void OnUpdate()
