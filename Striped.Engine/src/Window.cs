@@ -3,7 +3,7 @@ using Striped.Utils;
 
 namespace Striped.Engine
 {
-    public class Window
+    public class Window : IDrawable
     {
         public Coords Position { get; set; } = Coords.Zero;
         public int Width { get; set; } = 30;
