@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using Newtonsoft.Json;
 using Striped.Drawing;
 using Striped.Engine;
@@ -185,8 +186,14 @@ namespace TestApp
                         break;
                     case ConsoleKey.Enter:
                         {
-                            string output = JsonConvert.SerializeObject(paintPixels, Formatting.Indented);
-                            FileInfo fi = new FileInfo(Environment.CurrentDirectory + "/drawing.json");
+                            string output = JsonConvert.SerializeObject(paintPixels/*, Formatting.Indented*/);
+
+                            if (!Directory.Exists("./temp"))
+                            {
+                                Directory.CreateDirectory("./temp");
+                            }
+
+                            FileInfo fi = new FileInfo(Environment.CurrentDirectory + "/temp/draving.json");
 
                             if (fi.Exists) fi.Delete();
 
@@ -195,13 +202,35 @@ namespace TestApp
                                 sw.Write(output);
                             }
 
+                            if (File.Exists("./save.tp"))
+                            {
+                                File.Delete("./save.tp");
+                            }
+
+                            ZipFile.CreateFromDirectory("./temp", "./save.tp", CompressionLevel.Fastest, false);
+
+                            if (Directory.Exists("./temp"))
+                            {
+                                Directory.Delete("./temp", true);
+                            }
+
                             justSaved = true;
                         }
                         break;
                     case ConsoleKey.Spacebar:
                         {
                             string input = "";
-                            FileInfo fi = new FileInfo(Environment.CurrentDirectory + "/drawing.json");
+
+                            if (!File.Exists("./save.tp")) return;
+
+                            if (Directory.Exists("./temp"))
+                            {
+                                Directory.Delete("./temp", true);
+                            }
+
+                            ZipFile.ExtractToDirectory("./save.tp", "./temp");
+
+                            var fi = new FileInfo("./temp/draving.json");
 
                             if (!fi.Exists) return;
 
@@ -209,6 +238,11 @@ namespace TestApp
                             {
                                 input = sw.ReadToEnd();
                                 
+                            }
+
+                            if (Directory.Exists("./temp"))
+                            {
+                                Directory.Delete("./temp", true);
                             }
 
                             paintPixels = JsonConvert.DeserializeObject<List<PaintPixel>>(input);
