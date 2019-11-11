@@ -1,4 +1,7 @@
-﻿using System;
+﻿// This code belong to StackOverflow's user SWdV (https://stackoverflow.com/users/4454665/swdv)
+// Code source: https://stackoverflow.com/a/29971246
+
+using System;
 using System.Runtime.InteropServices;
 using static ConsoleLib.NativeMethods;
 
