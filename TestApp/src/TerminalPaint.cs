@@ -262,13 +262,13 @@ namespace TestApp
             {
                 if (justSaved)
                 {
-                    Graphic.DefaultBackColor = ConsoleColor.Green;
+                    Graphic.AddRectangle(" ", new Colors(Colors.Color.Default, Colors.Color.Green), new Coords(3, 2), new Coords(Graphic.Width - 4, Graphic.Height - 3));
                     justSaved = false;
                 }
 
                 if (justLoaded)
                 {
-                    Graphic.DefaultBackColor = ConsoleColor.Gray;
+                    Graphic.AddRectangle(" ", new Colors(Colors.Color.Default, Colors.Color.Gray), new Coords(3, 2), new Coords(Graphic.Width - 4, Graphic.Height - 3));
                     justLoaded = false;
                 }
             }
