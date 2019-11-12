@@ -85,9 +85,10 @@ namespace Striped.Drawing
             Width = Console.WindowWidth;
             Height = Console.WindowHeight;
 
-            DefaultFontColor = Console.ForegroundColor;
+            DefaultFontColor = ConsoleColor.Gray;
+            DefaultBackColor = ConsoleColor.Black;
+
             defaultFontColorBackup = DefaultFontColor;
-            DefaultBackColor = Console.BackgroundColor;
             defaultBackColorBackup = DefaultBackColor;
 
             currentOrigin = Origin.Default;
