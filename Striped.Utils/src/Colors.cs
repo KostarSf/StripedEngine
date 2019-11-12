@@ -4,8 +4,6 @@ namespace Striped.Utils
 {
     public class Colors
     {
-        private Colors brushColor;
-
         public static Colors Default { get; set; } = new Colors(Color.White, Color.Black);
 
         public enum Color
