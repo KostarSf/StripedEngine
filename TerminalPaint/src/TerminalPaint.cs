@@ -40,6 +40,7 @@ namespace TestApp
             FirstColor = new Colors(Colors.Color.Default, Colors.Color.White),
             SecondColor = new Colors(Colors.Color.Default, Colors.Color.Black),
             BrushColor = new Colors(Colors.Color.Default, Colors.Color.White),
+            Erase = true,
         };
 
         HighlightColor highlight = new HighlightColor
