@@ -16,12 +16,30 @@ namespace TestApp
         public char Char { get; set; }
     }
 
+    class Brush
+    {
+        public Colors BrushColor { get; set; }
+        public Colors FirstColor { get; set; }
+        public Colors SecondColor { get; set; }
+        public char Char { get; set; }
+        public bool Erase { get; set; }
+    }
+
     internal class TerminalPaint : Core
     {
-        Colors cursorColor = new Colors(Colors.Color.Default, Colors.Color.Gray);
-        Colors brushColor = new Colors(Colors.Color.Default, Colors.Color.White);
+        Brush brush = new Brush
+        {
+            Char = ' ',
+            FirstColor = new Colors(Colors.Color.Default, Colors.Color.White),
+            SecondColor = new Colors(Colors.Color.Default, Colors.Color.Black),
+            BrushColor = new Colors(Colors.Color.Default, Colors.Color.White),
+        };
 
-        Colors oldCurorColors = new Colors(Colors.Color.Default, Colors.Color.Gray);
+        {
+            Color = new Colors(Colors.Color.Green, Colors.Color.Default),
+            Text = "(8)",
+            Coords = new Coords(69, 0),
+        };
 
         List<PaintPixel> paintPixels = new List<PaintPixel>();
         List<PaintPixel> tempPixels = new List<PaintPixel>();
@@ -53,7 +71,6 @@ namespace TestApp
             {
                 case MouseButtons.None:
                     {
-                        cursorColor = new Colors(oldCurorColors);
                         if (tempPixels.Count > 0)
                         {
                             if (!clearTempPaint)
@@ -70,72 +87,42 @@ namespace TestApp
                                     }
                                 }
 
-                                paintPixels.AddRange(tempPixels);
+                                if (!brush.Erase)
+                                {
+                                    paintPixels.AddRange(tempPixels);
+                                }
                             }
                             else
                             {
                                 clearTempPaint = false;
                             }
+
                             tempPixels.Clear();
                         }
                     }
                     break;
                 case MouseButtons.RightMouseButton:
                     {
-                        cursorColor.BackColor = ConsoleColor.DarkCyan;
-                        for (int i = paintPixels.Count - 1; i >= 0; i--)
+                        if (brush.SecondColor.BackColor == ConsoleColor.Black)
                         {
-                            if (paintPixels[i].Position.SameAs(e.Position))
-                            {
-                                paintPixels.RemoveAt(i);
-                            }
+                            brush.Erase = true;
                         }
+                        else
+                        {
+                            brush.Erase = false;
+                        }
+
+                        DrawColor(brush.SecondColor, e.Position);
                     }
                     break;
                 case MouseButtons.LeftMouseButton:
                     {
-                        cursorColor.BackColor = ConsoleColor.Cyan;
-
-                        for (int i = tempPixels.Count - 1; i >= 0; i--)
-                        {
-                            if (tempPixels[i].Position.SameAs(e.Position))
-                            {
-                                tempPixels.RemoveAt(i);
-                            }
-                        }
-
-                        if (e.Position.IsInRectangle(new Coords(3, 2), new Coords(Graphic.Width - 4, Graphic.Height - 3)))
-                        {
-                            if (tempPixels.Count == 0)
-                            {
-                                tempPixels.Add(new PaintPixel { Char = ' ', Color = new Colors(brushColor), Position = e.Position });
-                            }
-                            else
-                            {
-                                var horDistance = Coords.HorisontalDistance(tempPixels[tempPixels.Count - 1].Position, e.Position);
-                                var verDistance = Coords.VerticalDistance(tempPixels[tempPixels.Count - 1].Position, e.Position);
-
-                                if (horDistance > 1 || verDistance > 1)
-                                {
-                                    var interpolatePath = Coords.GetPath(tempPixels[tempPixels.Count - 1].Position, e.Position);
-                                    interpolatePath.RemoveAt(0);
-
-                                    foreach (var coords in interpolatePath)
-                                    {
-                                        tempPixels.Add(new PaintPixel { Char = ' ', Color = new Colors(brushColor), Position = coords });
-                                    }
-                                }
-                                else
-                                {
-                                    tempPixels.Add(new PaintPixel { Char = ' ', Color = new Colors(brushColor), Position = e.Position });
-                                }
-                            }
-                        }
+                        brush.Erase = false;
+                        DrawColor(brush.FirstColor, e.Position);
                     }
                     break;
                 case MouseButtons.MiddleMouseButton:
                     {
-                        cursorColor.BackColor = ConsoleColor.Gray;
                         paintPixels.Clear();
                     }
                     break;
@@ -145,6 +132,56 @@ namespace TestApp
                         clearTempPaint = true;
                     }
                     break;
+            }
+        }
+
+        private void DrawColor(Colors color, Coords coords)
+        {
+            for (int i = tempPixels.Count - 1; i >= 0; i--)
+            {
+                if (tempPixels[i].Position.SameAs(coords))
+                {
+                    tempPixels.RemoveAt(i);
+                }
+            }
+
+            if (coords.IsInRectangle(new Coords(3, 2), new Coords(Graphic.Width - 4, Graphic.Height - 3)))
+            {
+                if (tempPixels.Count == 0)
+                {
+                    tempPixels.Add(new PaintPixel { Char = ' ', Color = new Colors(color), Position = coords });
+                }
+                else
+                {
+                    var horDistance = Coords.HorisontalDistance(tempPixels[tempPixels.Count - 1].Position, coords);
+                    var verDistance = Coords.VerticalDistance(tempPixels[tempPixels.Count - 1].Position, coords);
+
+                    if (horDistance > 1 || verDistance > 1)
+                    {
+                        var interpolatePath = Coords.GetPath(tempPixels[tempPixels.Count - 1].Position, coords);
+                        interpolatePath.RemoveAt(0);
+
+                        foreach (var _coords in interpolatePath)
+                        {
+                            tempPixels.Add(new PaintPixel { Char = ' ', Color = new Colors(color), Position = _coords });
+                        }
+                    }
+                    else
+                    {
+                        tempPixels.Add(new PaintPixel { Char = ' ', Color = new Colors(color), Position = coords });
+                    }
+                }
+            }
+        }
+
+        private void RemovePixel(Coords coords)
+        {
+            for (int i = paintPixels.Count - 1; i >= 0; i--)
+            {
+                if (paintPixels[i].Position.SameAs(coords))
+                {
+                    paintPixels.RemoveAt(i);
+                }
             }
         }
 
@@ -176,12 +213,27 @@ namespace TestApp
                         break;
                     case ConsoleKey.D4:
                         {
-                            ChangePaintColors(new Colors(Colors.Color.Default, Colors.Color.Blue), new Colors(Colors.Color.Default, Colors.Color.DarkBlue));
+                            ChangePaintColors(new Colors(Colors.Color.Default, Colors.Color.Cyan), new Colors(Colors.Color.Default, Colors.Color.DarkCyan));
                         }
                         break;
                     case ConsoleKey.D5:
                         {
+                            ChangePaintColors(new Colors(Colors.Color.Default, Colors.Color.Blue), new Colors(Colors.Color.Default, Colors.Color.DarkBlue));
+                        }
+                        break;
+                    case ConsoleKey.D6:
+                        {
                             ChangePaintColors(new Colors(Colors.Color.Default, Colors.Color.Magenta), new Colors(Colors.Color.Default, Colors.Color.DarkMagenta));
+                        }
+                        break;
+                    case ConsoleKey.D7:
+                        {
+                            ChangePaintColors(new Colors(Colors.Color.Default, Colors.Color.Gray), new Colors(Colors.Color.Default, Colors.Color.DarkGray));
+                        }
+                        break;
+                    case ConsoleKey.D8:
+                        {
+                            ChangePaintColors(new Colors(Colors.Color.Default, Colors.Color.White), new Colors(Colors.Color.Default, Colors.Color.Black));
                         }
                         break;
                     case ConsoleKey.Enter:
@@ -259,11 +311,11 @@ namespace TestApp
             }
         }
 
-        private void ChangePaintColors(Colors brush, Colors cursor)
+        private void ChangePaintColors(Colors firstColor, Colors secondColor)
         {
-            brushColor = brush;
-            cursorColor = cursor;
-            oldCurorColors = cursor;
+            brush.FirstColor = firstColor;
+            brush.SecondColor = secondColor;
+            brush.BrushColor = firstColor;
         }
 
         public override void OnUpdate()
@@ -310,7 +362,7 @@ namespace TestApp
 
             if (MousePosition.IsInRectangle(new Coords(3, 2), new Coords(Graphic.Width - 4, Graphic.Height - 3)))
             {
-                Graphic.Add(" ", MousePosition, cursorColor);
+                Graphic.Add(" ", MousePosition, brush.BrushColor);
             }
 
             Graphic.Draw();
@@ -356,7 +408,7 @@ namespace TestApp
             Graphic.Add(" ", new Coords(67, 0), new Colors(Colors.Color.Default, Colors.Color.Black));
 
             Graphic.SetOrigin(new Origin(Origin.HorizontalOrigin.Right, Origin.VerticalOrigin.Bottom));
-            Graphic.Add(" Draw: LMB, Erase: RMB, Clear: MMB ", new Coords(-1, 0));
+            Graphic.Add(" First: LMB, Second: RMB, Clear: MMB ", new Coords(-1, 0));
 
             Graphic.SetOrigin(Origin.Default);
         }
