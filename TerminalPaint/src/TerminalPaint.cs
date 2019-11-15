@@ -25,6 +25,13 @@ namespace TestApp
         public bool Erase { get; set; }
     }
 
+    class HighlightColor
+    {
+        public Colors Color { get; set; }
+        public string Text { get; set; }
+        public Coords Coords { get; set; }
+    }
+
     internal class TerminalPaint : Core
     {
         Brush brush = new Brush
@@ -35,6 +42,7 @@ namespace TestApp
             BrushColor = new Colors(Colors.Color.Default, Colors.Color.White),
         };
 
+        HighlightColor highlight = new HighlightColor
         {
             Color = new Colors(Colors.Color.Green, Colors.Color.Default),
             Text = "(8)",
@@ -199,41 +207,57 @@ namespace TestApp
                     case ConsoleKey.D1:
                         {
                             ChangePaintColors(new Colors(Colors.Color.Default, Colors.Color.Red), new Colors(Colors.Color.Default, Colors.Color.DarkRed));
+                            highlight.Coords.X = 13;
+                            highlight.Text = "(1)";
                         }
                         break;
                     case ConsoleKey.D2:
                         {
                             ChangePaintColors(new Colors(Colors.Color.Default, Colors.Color.Yellow), new Colors(Colors.Color.Default, Colors.Color.DarkYellow));
+                            highlight.Coords.X = 21;
+                            highlight.Text = "(2)";
                         }
                         break;
                     case ConsoleKey.D3:
                         {
                             ChangePaintColors(new Colors(Colors.Color.Default, Colors.Color.Green), new Colors(Colors.Color.Default, Colors.Color.DarkGreen));
+                            highlight.Coords.X = 29;
+                            highlight.Text = "(3)";
                         }
                         break;
                     case ConsoleKey.D4:
                         {
                             ChangePaintColors(new Colors(Colors.Color.Default, Colors.Color.Cyan), new Colors(Colors.Color.Default, Colors.Color.DarkCyan));
+                            highlight.Coords.X = 37;
+                            highlight.Text = "(4)";
                         }
                         break;
                     case ConsoleKey.D5:
                         {
                             ChangePaintColors(new Colors(Colors.Color.Default, Colors.Color.Blue), new Colors(Colors.Color.Default, Colors.Color.DarkBlue));
+                            highlight.Coords.X = 45;
+                            highlight.Text = "(5)";
                         }
                         break;
                     case ConsoleKey.D6:
                         {
                             ChangePaintColors(new Colors(Colors.Color.Default, Colors.Color.Magenta), new Colors(Colors.Color.Default, Colors.Color.DarkMagenta));
+                            highlight.Coords.X = 53;
+                            highlight.Text = "(6)";
                         }
                         break;
                     case ConsoleKey.D7:
                         {
                             ChangePaintColors(new Colors(Colors.Color.Default, Colors.Color.Gray), new Colors(Colors.Color.Default, Colors.Color.DarkGray));
+                            highlight.Coords.X = 61;
+                            highlight.Text = "(7)";
                         }
                         break;
                     case ConsoleKey.D8:
                         {
                             ChangePaintColors(new Colors(Colors.Color.Default, Colors.Color.White), new Colors(Colors.Color.Default, Colors.Color.Black));
+                            highlight.Coords.X = 69;
+                            highlight.Text = "(8)";
                         }
                         break;
                     case ConsoleKey.Enter:
@@ -390,6 +414,7 @@ namespace TestApp
             Graphic.SetOrigin(new Origin(Origin.HorizontalOrigin.Left, Origin.VerticalOrigin.Bottom));
             Graphic.Add(" Colors:", new Coords(1, 0));
             Graphic.Add("    (1),    (2),    (3),    (4),    (5),    (6),    (7),    (8).", new Coords(9, 0), new Colors(Colors.Color.DarkGray, Colors.Color.Default));
+            Graphic.Add(highlight.Text, highlight.Coords, highlight.Color);
             Graphic.Add(" ", new Coords(10, 0), new Colors(Colors.Color.Default, Colors.Color.Red));
             Graphic.Add(" ", new Coords(11, 0), new Colors(Colors.Color.Default, Colors.Color.DarkRed));
             Graphic.Add(" ", new Coords(18, 0), new Colors(Colors.Color.Default, Colors.Color.Yellow));
