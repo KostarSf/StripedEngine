@@ -16,7 +16,7 @@ namespace TestApp
         public char Char { get; set; }
     }
 
-    internal class TerminalPaint : GameCore
+    internal class TerminalPaint : Core
     {
         Colors cursorColor = new Colors(Colors.Color.Default, Colors.Color.Gray);
         Colors brushColor = new Colors(Colors.Color.Default, Colors.Color.White);
