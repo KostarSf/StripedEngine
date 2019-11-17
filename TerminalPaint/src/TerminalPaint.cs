@@ -352,19 +352,20 @@ namespace TestApp
             Graphic.Clear();
             Graphic.FitSizesToWindow();
 
-            var pixelCount = paintPixels.Count;
-            for (int i = 0; i < pixelCount; i++)
+            var temp1 = GetSafePixelsList(paintPixels);
+
+            for (int i = 0; i < temp1.Count; i++)
             {
-                if (i < paintPixels.Count)
-                    Graphic.Add(paintPixels[i].Char.ToString(), paintPixels[i].Position, paintPixels[i].Color);
+                Graphic.Add(temp1[i].Char.ToString(), temp1[i].Position, temp1[i].Color);
             }
 
-            pixelCount = tempPixels.Count;
-            for (int i = 0; i < pixelCount; i++)
+            var temp2 = GetSafePixelsList(tempPixels);
+
+            for (int i = 0; i < temp2.Count; i++)
             {
-                if (i < tempPixels.Count)
-                    Graphic.Add(tempPixels[i].Char.ToString(), tempPixels[i].Position, tempPixels[i].Color);
+                Graphic.Add(temp2[i].Char.ToString(), temp2[i].Position, temp2[i].Color);
             }
+            temp2.Clear();
 
             if (justSaved || justLoaded)
             {
@@ -390,6 +391,26 @@ namespace TestApp
             }
 
             Graphic.Draw();
+        }
+
+        private List<PaintPixel> GetSafePixelsList(List<PaintPixel> listPixels)
+        {
+            List<PaintPixel> outList = new List<PaintPixel>(Console.WindowWidth * Console.WindowHeight);
+            outList.AddRange(listPixels);
+
+            for (int i = outList.Count - 1; i >= 0; i--)
+            {
+                if (outList[i] == null)
+                {
+                    outList.RemoveAt(i);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return outList;
         }
 
         void drawInterface()
