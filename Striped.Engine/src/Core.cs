@@ -7,7 +7,7 @@ using static ConsoleLib.NativeMethods;
 
 namespace Striped.Engine
 {
-    public class GameCore
+    public class Core
     {
         public delegate void OnKeyPressHandler(KeyEventInfo e);
         public delegate void OnMouseHandler(MouseEventInfo e);
@@ -42,7 +42,7 @@ namespace Striped.Engine
 
         public Utils.Coords MousePosition { get; private set; } = new Utils.Coords(0, 0);
 
-        public GameCore()
+        public Core()
         {
             ConsoleLib.ConsoleListener.KeyEvent += ConsoleListener_KeyEvent;
             ConsoleLib.ConsoleListener.MouseEvent += ConsoleListener_MouseEvent;

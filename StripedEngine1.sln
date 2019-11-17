@@ -7,11 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Striped.Drawing", "Striped.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Striped.Engine", "Striped.Engine\Striped.Engine.csproj", "{0BD2B24E-C57D-4A28-BFAF-AF6F2975ECBB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestApp", "TestApp\TestApp.csproj", "{CDF826FE-EC74-415C-964D-BEFA2969B4D4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TerminalPaint", "TerminalPaint\TerminalPaint.csproj", "{CDF826FE-EC74-415C-964D-BEFA2969B4D4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Striped.Utils", "Striped.Utils\Striped.Utils.csproj", "{E4348ADC-19AF-4C82-AE24-3439313C05E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Striped.Utils.Tests", "Striped.Utils.Tests\Striped.Utils.Tests.csproj", "{2B163BA6-DE25-4088-AA25-6CC759DAFA45}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Striped.Utils.Tests", "Striped.Utils.Tests\Striped.Utils.Tests.csproj", "{2B163BA6-DE25-4088-AA25-6CC759DAFA45}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
