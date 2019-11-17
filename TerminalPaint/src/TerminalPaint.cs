@@ -450,6 +450,8 @@ namespace TestApp
             Graphic.Add($"Draw calls: ....: {Graphic.LastDrawCallsCount}", new Coords(3, 4));
             Graphic.Add($"Pixels painted .: {paintPixels.Count}", new Coords(3, 5));
             Graphic.Add($"Pixels in temp .: {tempPixels.Count}", new Coords(3, 6));
+
+            Graphic.SetOrigin(Origin.Default);
         }
     }
 }
