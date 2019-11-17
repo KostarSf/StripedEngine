@@ -314,7 +314,6 @@ namespace TestApp
                             using (StreamReader sw = fi.OpenText())
                             {
                                 input = sw.ReadToEnd();
-                                
                             }
 
                             if (Directory.Exists("./temp"))
