@@ -59,6 +59,8 @@ namespace TestApp
         bool justLoaded;
         bool clearTempPaint;
 
+        bool showHelp;
+
         public TerminalPaint()
         {
             Title = "KostarSf's Terminal Paint";
@@ -203,6 +205,11 @@ namespace TestApp
                     case ConsoleKey.Q:
                         {
                             showDebug = !showDebug;
+                        }
+                        break;
+                    case ConsoleKey.H:
+                        {
+                            showHelp = !showHelp;
                         }
                         break;
                     case ConsoleKey.D1:
@@ -383,6 +390,7 @@ namespace TestApp
             }
 
             drawInterface();
+            drawHelp();
             drawDebug();
 
             if (MousePosition.IsInRectangle(new Coords(3, 2), new Coords(Graphic.Width - 4, Graphic.Height - 3)))
@@ -455,6 +463,24 @@ namespace TestApp
 
             Graphic.SetOrigin(new Origin(Origin.HorizontalOrigin.Right, Origin.VerticalOrigin.Bottom));
             Graphic.Add(" First: LMB, Second: RMB, Clear: MMB ", new Coords(-1, 0));
+
+            Graphic.SetOrigin(Origin.Default);
+        }
+
+        void drawHelp()
+        {
+            if (!showHelp) return;
+
+            Graphic.SetOrigin(new Origin(Origin.HorizontalOrigin.Center, Origin.VerticalOrigin.Middle));
+
+            Graphic.AddRectangle(" ", Colors.Default, new Coords(0, -5), new Coords(30, 4));
+            Graphic.AddRectangleBorder("═", "║", "═", "║", "╔", "╗", "╝", "╚", Colors.Default, new Coords(-15, -5), new Coords(15, 4));
+
+            Graphic.Add("Terminal Paint v1.0 100", new Coords(0, -3));
+            Graphic.Add("by KostarSf", new Coords(0, -2));
+
+            Graphic.Add("powered by", new Coords(0, 1));
+            Graphic.Add("StripedEngine", new Coords(0, 2));
 
             Graphic.SetOrigin(Origin.Default);
         }
